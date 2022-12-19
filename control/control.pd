@@ -1,0 +1,20 @@
+module control
+
+type Flow[A, B] union 
+    Continue A 
+    Exit     B 
+
+Continue = Flow.Continue
+Exit     = Flow.Exit 
+
+def Reduce[A, B, C](a |A|, init B, f &(B, A) => Flow[B, C]) maybe[C]
+    match a 
+        case |first, ...rest|
+            match f(init, first)
+                case Continue(el)
+                    return Reduce(rest, el, f)
+                case Exit(ret)
+                    return some(ret) 
+            case ||
+                return none()
+

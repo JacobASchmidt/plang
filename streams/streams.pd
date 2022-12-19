@@ -1,0 +1,10 @@
+module streams
+
+def AdjecentPairs[A](a |&A|) |(&A, &A)|
+    match a 
+        case |first, second, ...rest|
+            return |(first, second), ...AdjecentPairs(|second, ...rest|)|
+        case _
+            return ||
+        
+    

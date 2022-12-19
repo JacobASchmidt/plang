@@ -1,0 +1,47 @@
+module builtin
+
+def map[A, B](a |A|, f &(A) => B) |B|
+    match a 
+        case |first, ...rest|
+            return |f(first), ...map(rest, f)|
+        case ||
+            return ||
+
+def filter[A](a |A|, f &(&A) => bool) |A|
+    match a 
+        case |first, ...rest|
+            if f(first)
+                return |first, ...filter(rest, f)|
+            else 
+                return filter(rest, f)
+        case ||
+            return ||
+
+def reduce[A, B](a |A|, init B, f &(B, A) => B) B 
+    match a 
+        case |first, ...rest|
+            return reduce(rest, f(init, first), f)
+        case ||
+            return init 
+        
+type maybe[A] union 
+    some A 
+    none 
+
+some = maybe.some 
+none = maybe.none 
+
+def must[A](a maybe[A]) A
+    match a 
+        case some(el)
+            return el 
+        case none()
+            panic("expected a value, got none")
+
+def zip[A, B](a |A|, b |B|) |(A, B)|
+    match (a, b)
+        case (|a_first, ...a_rest|, |b_first, ...b_rest|)
+            return |(a_first, b_first), ...zip(a_rest, b_rest)|
+        case _ 
+            return ||
+
