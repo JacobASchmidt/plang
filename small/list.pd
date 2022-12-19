@@ -1,0 +1,28 @@
+module small
+
+type List[A] union 
+    stack (A, A, A, A, A, A, A, A)
+    heap  [A]
+
+def (l List[A]) Get(idx int) &A
+    match l 
+        case List.stack(tup)
+            match idx 
+                case 0
+                    return tup[0]
+                case 1 
+                    return tup[1]
+                case 2 
+                    return tup[2]
+                case 3
+                    return tup[3]
+                case 4 
+                    return tup[4]
+                case 5 
+                    return tup[5]
+                case 6 
+                    return tup[6]
+                case 7 
+                    return tup[7]
+                case n 
+                    panic("out of bounds)

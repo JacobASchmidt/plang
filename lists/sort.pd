@@ -46,7 +46,7 @@ def StablePartitionSlice[A](a [A], begin int, end int, f &(&A) => bool) ([A], in
             (a, right) = StablePartitionSlice(a, mid, end, f)
             return RotateSlice(a, left, mid, end) 
     
-def partition[A](a [A], begin int, end int, cmp &(A, A) bool) ([A], int)
+def partitionMid[A](a [A], begin int, end int, cmp &(A, A) bool) ([A], int)
     mid = (begin + end) / 2
     last_idx = end - 1
     a = swap(a, mid, last)
@@ -54,5 +54,12 @@ def partition[A](a [A], begin int, end int, cmp &(A, A) bool) ([A], int)
     a = swap(a, idx, last)
     return (a, idx)
 
+def SortSlice[A](a [A], begin int, end int, cmp &(A, A) => bool) [A]
+    if end - begin <= 1 
+        return a 
+    
+    (a, point) = partitionMid(a, begin, end, cmp)
+    return Sort(a, begin, point, cmp)
+        then Sort(point + 1, end, cmp)
 
 
