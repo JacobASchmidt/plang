@@ -1,0 +1,58 @@
+module lists 
+
+def ReverseSlice[A](a [A], first int, last int) [A]
+    if first == last 
+        return a
+    else
+        return ReverseSlice(swap(a, first, last - 1), first + 1, last - 1)
+    
+def Reverse[A](a [A]) [A]
+    return ReverseSlice(a, 0, len(a))
+
+def RotateSlice[A](a [A], begin int, pivot int, end int) ([A], int)
+    a = ReverseSlice(a, begin, pivot)
+        then ReverseSlice(pivot, end)
+        then ReverseSlice(begin, end)
+    return (a, begin + (end - pivot))
+
+def Rotate[A](a [A], pivot int) ([A], int)
+    return RotateSlice(a, 0, pivot, len(a))
+
+def PartitionSlice[A](a [A], begin int, end int, f &(&A) => bool) ([A], int) 
+    def impl(a [A], pivot int, begin int, end int, f &(&A) => bool) ([A], int)
+        if begin == end 
+            return (a, pivot)
+        if f(a[begin])
+            return impl(swap(a, pivot, begin), pivot + 1, begin + 1, end, f)
+        else 
+            return impl(a, pivot, begin + 1, end, f)
+    return impl(a, begin, begin, end, f)
+
+def Partition[A](a [A], f &(&A) => bool) ([A], int)
+    return PartitionSlice(a, 0, len(a), f)
+
+def StablePartitionSlice[A](a [A], begin int, end int, f &(&A) => bool) ([A], int)
+    match end - begin 
+        case 0
+            return (a, begin) 
+        case 1 
+            if f(a[begin])
+                return (a, begin + 1)
+            else 
+                return (a, begin) 
+        case _ 
+            mid = (begin + end) / 2 
+            (a, left)  = StablePartitionSlice(a, begin, mid, f)
+            (a, right) = StablePartitionSlice(a, mid, end, f)
+            return RotateSlice(a, left, mid, end) 
+    
+def partition[A](a [A], begin int, end int, cmp &(A, A) bool) ([A], int)
+    mid = (begin + end) / 2
+    last_idx = end - 1
+    a = swap(a, mid, last)
+    (a, idx) = PartitionSlice(a, begin, last, (el) => cmp(el, a[last]))
+    a = swap(a, idx, last)
+    return (a, idx)
+
+
+

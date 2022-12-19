@@ -52,3 +52,7 @@ def zip[A, B](a |A|, b |B|) |(A, B)|
         case _ 
             return ||
 
+def swap[A](a [A], first int, second int) [A]
+    ... #builtin magic 
+
+

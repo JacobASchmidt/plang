@@ -7,4 +7,3 @@ def AdjecentPairs[A](a |&A|) |(&A, &A)|
         case _
             return ||
         
-    
