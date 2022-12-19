@@ -1,0 +1,19 @@
+module sets 
+
+def Collect[A](a |A|) {A}
+    return reduce(a, {}, (set, el) => {...set, el})
+
+def Union[A](a {A}, b |A|) {A}
+    return reduce(b, a, (a, b) => {...a, b})
+
+def Intersection[A](a |A|, b &{A}) |A|
+    return filter(a, (el) => el in b)
+
+def Difference[A](a |A|, b &{A}) |A|
+    return filter(a, (el) => el not in b)
+
+def SymmetricDifference[A](a &{A}, b &{A}) |A|
+    return filter(stream(a), (el) => el not in b)
+        then chain(filter(stream(b), (el) => el not in a))
+        then map((el) => copy(el))
+

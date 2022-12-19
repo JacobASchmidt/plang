@@ -23,6 +23,13 @@ def reduce[A, B](a |A|, init B, f &(B, A) => B) B
             return reduce(rest, f(init, first), f)
         case ||
             return init 
+
+def chain[A](a |A|, b |A|) |A|
+    match a 
+        case |first, ...rest|
+            return |first, ...chain(rest, b)|
+        case ||
+            return b 
         
 type maybe[A] union 
     some A 
