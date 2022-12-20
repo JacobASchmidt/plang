@@ -1,0 +1,8 @@
+module unicode
+
+
+def ToUpper(r rune) rune 
+    #TODO
+
+def ToLower(r rune) rune 
+    #TODO
