@@ -7,3 +7,5 @@ def AdjecentPairs[A](a |&A|) |(&A, &A)|
         case _
             return ||
         
+def Repeat[A](a &A) |&A|
+    return |a, ...Repeat(a)|

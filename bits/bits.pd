@@ -1,0 +1,7 @@
+module bits 
+
+import (
+    "numbers"
+)
+
+def ShiftLeft[I numbers.Int]

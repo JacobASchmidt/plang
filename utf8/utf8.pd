@@ -1,0 +1,19 @@
+module utf8 
+
+import (
+    "bits"
+)
+
+rune1Max = bits.ShiftLeft(1, 7)  - 1
+rune2Max = bits.ShiftLeft(1, 11) - 1
+rune3Max = bits.ShiftLeft(1, 16) - 1
+
+def appendRuneNonASCII(p [byte], r rune) [byte]
+    if i <= rune1Max
+        return append(p, bits.Or())
+
+def AppendRune(p [byte], r rune) [byte]
+    if uint32(r) <= rune1Max 
+        return append(p, byte(r))
+    else 
+        return appendRuneNonASCII(p, r)
