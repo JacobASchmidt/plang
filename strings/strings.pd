@@ -16,7 +16,7 @@ def (b Builder) AppendRune(r rune) Builder
     return b{.buf = (buf) => utf8.AppendRune(r)}
 
 def (b Builder) AppendBytes(bytes |byte|) Builder 
-    return  reduce(bytes, b, (b, c) => b.AppendByte(c))
+    return reduce(bytes, b, (b, c) => b.AppendByte(c))
 
 def (b Builder) AppendRunes(runes |rune|) Builder
     return reduce(runes, b, (b, r) => b.AppendRune(r))

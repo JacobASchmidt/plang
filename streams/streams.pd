@@ -9,3 +9,24 @@ def AdjecentPairs[A](a |&A|) |(&A, &A)|
         
 def Repeat[A](a &A) |&A|
     return |a, ...Repeat(a)|
+
+def IsPartitioned[A](a |A|, f &(A) => bool) bool 
+    def impl(a |A|, f &(A) => bool) bool 
+        match a 
+            case |first, ...rest|
+                if f(a)
+                    return impl(rest, f)
+                else 
+                    return restFalse(rest, f)
+            case ||
+                return true 
+    def restFalse(a |A|, f &(A) => bool) bool   
+        match a 
+            case |first, ...rest|
+                if f(a)
+                    return false 
+                else 
+                    return restFalse(rest, f)
+            case ||
+                return true 
+    return impl(a, f)

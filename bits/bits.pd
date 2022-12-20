@@ -1,7 +1,7 @@
 module bits 
 
 import (
-    "numbers"
+    "classes"
 )
 
-def ShiftLeft[I numbers.Int]
+def ShiftLeft[I classes.Int]

@@ -55,10 +55,13 @@ def zip[A, B](a |A|, b |B|) |(A, B)|
 def swap[A](a [A], first int, second int) [A]
     ... #builtin magic 
 
-def next[A](a |A|) maybe[(a, |A|)]
-    match a 
-        case |first, ...rest|
-            return some((first, rest))
-        case ||
-            return none()
+def range(a int, b int) |int|
+    if a >= b 
+        return ||
+    else 
+        return |a, ...range(a+1, b)|
+
+def iota(n int) |int|
+    return |n, ...iota(n+1)|
+
 
