@@ -20,7 +20,7 @@ class Class set
     &{Class: Class}
     &<classes.Number>
 
-def Format[C Class](c &C) string 
+def String[C Class](c &C) string 
     def impl[C2 Class](c &C2, sb strings.Builder) strings.Builder
         match C2
             case Fast
