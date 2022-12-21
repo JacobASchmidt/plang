@@ -1,0 +1,49 @@
+module cmd
+
+type Value union 
+    Bool   bool
+    String string
+    Int    int
+    List   [Value]
+
+
+type Program struct 
+    Name        string 
+    Description string 
+    Epilog      string 
+    args        {string: argument}
+
+type arargument struct 
+    Default  maybe[Value]
+    Required bool
+    Help     maybe[string]
+    Value    Maybe[Value]
+
+
+type Argument struct 
+    Name     string 
+    Default  maybe[Value]
+    Required bool 
+    Help     maybe[string]
+
+def NewArgument(name string) Argument 
+    return Argument{
+        .Name     = name,
+        .Default  = none(),
+        .Required = false,
+        .Help     = none()
+    }
+
+def (p Program) Add(arg Argument) Program 
+    return Program{
+        .args = (args) => args{
+            arg.Name: argument{
+                .Default  = arg.Default,
+                .Required = arg.Required,
+                .Help     = arg.Help,
+                .Value    = none(), 
+            }
+        }
+
+def (p Program) Parse(args [string]) 
+
