@@ -64,4 +64,5 @@ def range(a int, b int) |int|
 def iota(n int) |int|
     return |n, ...iota(n+1)|
 
-
+def append[A](a [A], el A) [A]
+    return [...a, el]

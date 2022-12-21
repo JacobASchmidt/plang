@@ -1,0 +1,15 @@
+module unsafe 
+
+type List[A] [A]
+
+def (s List[A]) Extract(i int) (List[A], A)
+    #magic 
+
+def (s List[A]) Insert(i int, el A) List[A]
+    #magic 
+
+def (s List[A]) SetLen(i int) List[A]
+    #magic 
+
+def (s List[A]) Done() [A]
+    return s.els

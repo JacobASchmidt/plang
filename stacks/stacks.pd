@@ -1,0 +1,73 @@
+module stacks
+
+type Stack[A] struct 
+    els [A]
+
+def (s &Stack[A]) Stream() |&A|
+    return stream(s.els)
+
+def (s Stack[A]) Values() |A|
+    return values(s.els)
+
+def (s Stack[A]) Append(el A) Stack[A]
+    return s{.els = (els) => append(els, el)}
+
+def (s Stack[A]) Pop() (Stack[A], maybe[A])
+    match len(s.els)
+        case 0
+            return (s, none())
+        case _  
+            (s.els, el) = (els) => 
+                l = unsafe.List(els)
+                (l, el) = l.Extract(len(l) - 1)
+                l = l.SetLen(len(l) - 1)
+                return (l.Done(), el)
+        
+            return (s, some(el))
+
+def (s Stack[A]) At(i int) &A
+    return s.els[i]
+
+def (s &Stack[A]) Len() int 
+    return len(s.els)
+
+def (s &Stack[A]) Cap() int
+    return cap(s.els)
+
+def Collect[A](a |A|) Stack[A]
+    return reduce(a, Stack[A]{}, (s, el) => s.Append(el))
+
+type Bounded[A] struct 
+    els unsafe.List[A]
+
+def NewBounded(n int) Bounded 
+    return Bounded{.els = unsafe.NewList(0, n)}
+
+def (b Bounded[A]) TryAppend(el A) (Bounded[A], bool)
+    if b.els.Len() == b.els.Cap() 
+        return (b, false)
+    else 
+        return (b{.els = (els) => els.Insert(els.Len(), el)
+                                     .SetLen(els.Len() + 1)},
+                true)
+
+def (b Bounded[A]) Pop() (Bounded[A], maybe[A])
+    match len(s.els)
+        case 0
+            return (s, none())
+        case _  
+            (s.els, el) = (els) => 
+                (els, el) = els.Extract(len(els) - 1)
+                els = els.SetLen(len(l) - 1)
+                return (els, el)
+            
+            return (s, some(el))
+
+def (s Bounded[A]) At(i int) &A
+    return s.els[i]
+
+def (s &Bounded[A]) Len() int 
+    return len(s.els)
+
+def (s &Bounded[A]) Cap() int
+    return cap(s.els)
