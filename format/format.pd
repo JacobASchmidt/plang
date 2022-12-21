@@ -1,0 +1,43 @@
+module format 
+
+import (
+    "classes"
+)
+
+class Interface[I] interface 
+    (I) Format() string 
+
+class Fast[I] interface 
+    (I) FormatTo(strings.Builder) strings.Builder
+
+class Class set 
+    Fast
+    Interface
+    classes.Number 
+    string 
+    &[Class]
+    &{Class}
+    &{Class: Class}
+    &<classes.Number>
+
+def Format[C Class](c &C) string 
+    def impl[C2 Class](c &C2, sb strings.Builder) strings.Builder
+        match C2
+            case Fast
+                return c.FormatTo(sb)
+            case Interface 
+                return sb.AppendString(c.Format())
+            case classes.Number 
+                return appendNumber(c, sb)
+            case string 
+                return sb.AppendString(c)
+            case &[Class]
+                return appendList(c)
+            case &{Class}
+                return appendSet(c)
+            case &{Class: Class}
+                return appendDict(c)
+            case &<classes.Number>
+                return appendMatrix(c)
+            
+

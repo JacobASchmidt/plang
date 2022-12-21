@@ -1,0 +1,48 @@
+module classes 
+
+class Int set 
+    int 
+    int8 
+    int16
+    int32 
+    rune
+    int64
+
+class Uint set 
+    byte
+    uint8
+    uint16
+    uint32 
+    uint64 
+
+class Integer set 
+    Int 
+    Uint 
+
+class Float set 
+    float32
+    float64
+
+class Number set 
+    Integer 
+    Float 
+
+class Comparable set 
+    Number 
+    string 
+    [Comparable]
+    |Comparable|
+    struct(Comparable, Comparable...)
+    (Comparable, Comparable...)
+
+class EqualityComparible set 
+    Number 
+    string 
+    [EqualityComparible]
+    |EqualityComparible|
+    {EqualityComparible}
+    {EqualityComparible: EqualityComparible}
+    <Number>
+    struct(EqualityComparible...)
+    union(EqualityComparible, EqualityComparible...)
+
