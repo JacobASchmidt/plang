@@ -33,3 +33,4 @@ def main()
         .AddPositional(1, cmd.String(), "the name of the directory to walk")
     args = app.Parse()
     print(getContents(args.GetPositional(0).String()))
+
