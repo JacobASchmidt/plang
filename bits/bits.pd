@@ -1,7 +1,0 @@
-module bits 
-
-import (
-    "classes"
-)
-
-def ShiftLeft[I classes.Int]

@@ -1,0 +1,35 @@
+module main 
+
+import (
+    "strings"
+    "os"
+    "cmd"
+)
+
+def appendContents(sb strings.Builder, filename string) strings.Builder 
+    file = os.Open(filename)
+        then must((err) => "failed to open \"{}\", with error: {}", filename, err.Error())
+    return file.ReadTo(sb)
+        then must((err) => "failed to read from \"{}\", with error: {}", filename, err.Error())
+    
+def walk(dir string, sb strings.Builder) strings.Builder 
+    return os.DirEntries(dir)
+        then must((err) => "failed to open dir \"{}\, with error: {}", dir, err.Error())
+        then reduce(sb, (sb, dirent) => 
+            match dirent 
+                case os.DirEntry.Filename(filename)
+                    return appendContents(sb, filename)
+                case os.DirEntry.Dirname(dirname)
+                    return walk(dirname, sb)
+                case _
+                    return sb 
+        )
+
+def getContents(dir string) string
+    return walk(dir, strings.NewBuilder()).String()
+
+def main() 
+    app = cmd.NewApp()
+        .AddPositional(1, cmd.String(), "the name of the directory to walk")
+    args = app.Parse()
+    print(getContents(args.GetPositional(0).String()))

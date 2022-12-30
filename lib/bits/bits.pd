@@ -1,0 +1,24 @@
+module bits 
+
+import (
+    "classes"
+)
+
+type Mask uint64
+
+def And[U classes.Uint](a U, b U) U 
+    return builtinBitAnd(a, b)
+#etc
+
+def (m Mask) Clear(from int, to int) Mask 
+    left  = Mask(1) then ShiftLeft(to)   - 1
+    right = Mask(1) then ShiftLeft(from) - 1 
+    mask = And(left, Not(right)) then Not()
+
+    return And(m, mask)
+
+def (a Mask) Or(b Mask) Mask    
+    return Or(a, b)
+
+def (m Mask) Set(from int, to int, value uint64) Mask 
+    return m.Clear(from, to).Or(value then ShiftLeft(to))
