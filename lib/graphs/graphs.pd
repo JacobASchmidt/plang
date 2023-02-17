@@ -1,0 +1,7 @@
+module graphs
+
+class Directed[A hashable, G Graph[A, G]] interface 
+    (G) Add(A, A)    G 
+    (G) Remove(A, A) G
+    (G) Neighbors() |&A|
+

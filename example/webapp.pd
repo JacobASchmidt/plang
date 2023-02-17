@@ -2,11 +2,15 @@ module main
 
 import (
 	"http"
+    "log"
 )
 
-def main() 
+def main()
+    log = log.New()
+
     app = http.NewApp()
         .Get("/",      (req, resp) => http.Static(req, resp, http.Dir("static")))
         .Get("/hello", (req, resp) => resp.Write("Hello, World!" to [byte]))
-        .ListenAndServe(":8080")
+    
+    log = log.Fatal(app.ListenAndServe(":8080"))
     
