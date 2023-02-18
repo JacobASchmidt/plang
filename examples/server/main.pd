@@ -14,7 +14,7 @@ fruits := {
 }
 
 def getFruits(c http.Context) http.Result
-    return http.JSON(fruits)
+    return c.JSON(fruits)
 
 def getFruit(c http.Context) http.Result 
     name = c.Params("name")
