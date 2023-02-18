@@ -14,6 +14,8 @@ def main()
 
     args = program.Parse(must(os.CmdArgs()))
 
+    filename = args.Positional(0)
+
     match os.Open(filename)
         case ok(file)
             must(file.Lines())
