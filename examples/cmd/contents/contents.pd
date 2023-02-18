@@ -1,0 +1,24 @@
+module main 
+
+import (
+    "os"
+    "cmd" 
+    "format"
+)
+
+def main()
+    program = cmd.Program{
+        .Name = "contents",
+        .Description = "Prints contents of FILE to standard output"
+    }.AddPositional("FILE", "FILE whose contenst will be viewed)
+
+    args = program.Parse(must(os.CmdArgs()))
+
+    match os.Open(filename)
+        case ok(file)
+            must(file.Lines())
+                then map((line) => must(line, (e) => format.String("error during reading file: `{}`", e.Message()))
+                then map((line) => print(line))
+                then force()
+        case err(e)
+            panic("error opening file: `{}`", e.Message())
