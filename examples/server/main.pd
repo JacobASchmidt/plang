@@ -1,0 +1,65 @@
+module main
+
+import (
+    "http"
+)
+
+type Fruit struct 
+    Name     string {.json = "name"}
+    Quantity int    {.json = "quanitity"}
+
+fruits := {
+    "apple": 10,
+    "banana": 5
+}
+
+def getFruits(c http.Context) http.Result
+    return http.JSON(fruits)
+
+def getFruit(c http.Context) http.Result 
+    name = c.Params("name")
+    match fruits[name]
+        case some(val)
+            return c.JSON(val)
+        case none()
+            return c.Status(404).JSON(("message", "Fruit not found"))
+
+def addFruit(c http.Context) http.Result 
+    match c.ParseBody[Fruit]()
+        case ok(fruit)
+            fruits := fruits{fruit.Name: fruit.Quanitity)
+            return c.Status(201).JSON(("message", "Fruit added succesfully"))
+        case err(err)
+            return c.Status(400).JSON(("messsage", "Invalid request body"))
+
+def updateFruit(c http.Context) http.Result
+    name = c.Params("name")
+    match c.ParseBody[Fruit]()
+        case ok(fruit)
+            match fruits[fruit.Name]
+                case some(_)
+                    fruits := fruits{fruit.Name: fruit.Quanitity}
+                    return c.JSON(fiber.Map{"message": "Fruit quantity updated successfully"})
+                case none()
+                    return c.Status(404).JSON(("message", "Fruit not found"))
+        case err(err)
+            return c.Status(400).JSON(("message", "Invalid request body"))
+
+def deleteFruit(c http.Context) http.Result
+    name = c.Params("name")
+    match fruits[name]
+        case some(val)
+            fruits := delete(fruits, name)
+            return c.JSON(("message", "Fruit deleted successfully"))
+        case none()
+            return c.Status(404).JSON(("message": "Fruit not found"))
+
+def main()
+    app = http.New()
+        .Get("/fruits", getFruits)
+        .Get("/fruits/:name", getFruit)
+        .Post("/fruits", addFruit)
+        .Put("/fruits/:name", updateFruit)
+        .Delete("fruits/:name", deleteFruit)
+
+    must(app.Listen())
