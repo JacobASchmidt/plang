@@ -1,0 +1,37 @@
+module main
+
+import (
+    "os"
+    "cmd" 
+    "format"
+    "regex"
+)
+
+def recursiveSearch(path os.Path, re regex.Regex)
+    if os.IsDir(path)
+        match os.Direcro
+
+
+def main()
+    program = cmd.Program{
+        .Name = "find",
+        .Description = "Finds matches of PATTERN in FILE(s)"
+    }.AddPositional("PATTERN", "PATTERN to find")
+        .AddPositional("FILE", "FILE (or directory) whose contenst will be searched")
+
+
+    args = program.Parse(must(os.CmdArgs()))
+
+    pattern = args.Positional(0)
+    file    = os.NewPath(args.Positional(1))
+
+
+
+    match os.Open(filename)
+        case ok(file)
+            must(file.Lines())
+                then map((line) => must(line, (e) => format.String("error during reading file: `{}`", e.Message()))
+                then map((line) => print(line))
+                then force()
+        case err(e)
+            panic("error opening file: `{}`", e.Message())
