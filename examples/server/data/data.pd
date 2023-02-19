@@ -2,10 +2,13 @@ moudle data
 
 import (
     "json"
+    "sync"
 )
 
-type Store struct 
+type store struct 
     fruits {string: int}
+
+type Store sync.ReaderWriter[store]
 
 def New() Store 
     return Store{}
@@ -15,29 +18,41 @@ type Fruit struct
     Quantiity int    {.json = "quantity"}
 
 def (s &Store) FruitsJSON() string
-    return json.Format(s.fruits)
+    return s.Reader((s) => json.Format(s.fruits))
 
 def (s &Store) GetFruit(name string) maybe[Fruit]
-    match s.fruits[name]
-        case some(quantiity)
-            return some(Fruit{.Name = name, .Quantiity = val})
-        case none()
-            return none()
+    return s.Reader(() => 
+        match s.fruits[name]
+            case some(quantiity)
+                return some(Fruit{.Name = name, .Quantiity = val})
+            case none()
+                return none()
+    )
 
 def (s Store) AddFruit(f Fruit) Store 
-    return s.fruits{f.Name: f.Quantity}
+    return s.Writer((s) => s{fruits{f.Name: f.Quantity}})
 
 def (s Store) UpdateFruit(f Fruit) (Store, found bool)
-    match s.fruits[name]
-        case some(quantiity)
-            return (s.AddFruit(fruit), true)
-        case none()
-            return (s, false)
+    found = s.Reader((s) => f.Name in s.fruits)
+    if not found 
+        return (s, false)
+    return s.Writer((s) => 
+        match s.fruits[name]
+            case some(quantiity)
+                return (s.AddFruit(fruit), true)
+            case none()
+                return (s, false)
+    )
 
 def (s Store) DeleteFruit(name string) (Store, found bool)
-    match s.fruits[name]
-        case some(quantiity)
-            return (s{.fruits = (fruits) => delete(fruits, name)}, true)
-        case none()
-            return (s, false)
+    found = s.Reader((s) => f.Name in s.fruits)
+    if not found 
+        return false 
+    return s.Writer((s) => 
+        match s.fruits[name]
+            case some(quantiity)
+                return (s{.fruits = (fruits) => delete(fruits, name)}, true)
+            case none()
+                return (s, false)
+    )
 
