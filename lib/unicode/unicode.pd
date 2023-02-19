@@ -2,7 +2,53 @@ module unicode
 
 
 def ToUpper(r rune) rune 
-    #TODO
+    if r inRange('a', 'z')
+        return r - 32
+    if r inRange('à', 'ö')
+        return r - 32
+    
+  | #"à" .. #"ö" => chr(ord(c) - 32)
+  | #"ø" => #"Ø"
+  | #"ù" .. #"ü" => chr(ord(c) - 32)
+  | #"ý" => #"Ý"
+  | #"þ" => #"Þ"
+  | #"ß" => #"ẞ"
+  | _ => c
 
 def ToLower(r rune) rune 
     #TODO
+
+def inRange(r rune, a rune, b rune)
+    return a <= r and r <= b
+def IsLetter(r rune) bool 
+    return inRange(r, 0x41, 0x5A)
+        or inRange(r, 0x61, 0x7A) 
+        or inRange(r, 0xC0, 0xD6) 
+        or inRange(r, 0xD8, 0xF6) 
+        or inRange(r, 0xF8, 0x2FF) 
+        or inRange(r, 0x370, 0x37D) 
+        or inRange(r, 0x37F, 0x1FFF) 
+        or inRange(r, 0x200C, 0x200D) 
+        or inRange(r, 0x2070, 0x218F) 
+        or inRange(r, 0x2C00, 0x2FEF) 
+        or inRange(r, 0x3001, 0xD7FF) 
+        or inRange(r, 0xF900, 0xFDCF) 
+        or inRange(r, 0xFDF0, 0xFFFD)
+
+def isSpace(r rune) bool 
+    return r == 0x09 
+        or r == 0x0A 
+        or r == 0x0B 
+        or r == 0x0C 
+        or r == 0x0D 
+        or r == 0x20 
+        or r == 0x85 
+        or r == 0xA0 
+        or r == 0x1680 
+        or inRange(r, 0x2000, 0x200A)
+        or r == 0x2028 
+        or r == 0x2029 
+        or r == 0x202F 
+        or r == 0x205F 
+        or r == 0x3000
+    
