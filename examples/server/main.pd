@@ -43,9 +43,9 @@ def deleteFruit(s data.Store, c http.Context) (data.Store, http.Result)
     name = c.Params("name")
     (s, found) = s.DeleteFruit(name)
     if found 
-        return c.JSON(("message", "Fruit deleted successfully"))
+        return (s, c.JSON(("message", "Fruit deleted successfully")))
     else 
-        return c.Status(404).JSON(("message", "Fruit not found"))
+        return (s, c.Status(404).JSON(("message", "Fruit not found")))
 
 def main()
     app = http.New(Data.New())
