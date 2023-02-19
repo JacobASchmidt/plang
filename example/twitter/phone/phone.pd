@@ -1,5 +1,0 @@
-module phone 
-
-type Number string 
-
-def 

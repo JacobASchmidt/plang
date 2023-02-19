@@ -1,0 +1,9 @@
+module hints 
+
+# Used as a compiler hint for saying len(a) < n
+def Cap[A](a |A|, n int) |A|
+    return a 
+
+# Used as a compiler hint for saying len(a) == n
+def Len[A](a |A|, n int) |A|
+    return a
