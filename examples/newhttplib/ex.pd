@@ -1,0 +1,46 @@
+module http 
+
+import (
+    "net"
+    "control"
+)
+
+type Error struct 
+
+type Context struct 
+
+type Result struct 
+
+type Func[State] union 
+    Const   &(&State, Context) => Result
+    Mutable &(State, Context) => (State, Context)
+
+type Mux[State] struct 
+    routes [string]
+    funcs  [Func[State]]
+
+type Server[State] struct 
+    con       net.TCPConn
+    state     State 
+    CallBacks mux[State]
+
+
+def New[State](s State) Server 
+    return Server{
+        .state = state
+    }
+
+def (s Server) Listen(port string) Error 
+    match net.NewTCP(port)
+        case ok(con)
+            s = s{.con = con}        
+        case err(e)
+            return e 
+    
+    return control.Loop(saying, () => 
+        s = s{
+            .con = (con) => 
+                # UH OH
+
+
+    )
