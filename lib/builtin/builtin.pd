@@ -60,6 +60,7 @@ def range(a int, b int) |int|
         return ||
     else 
         return |a, ...range(a+1, b)|
+            then hints.Len(b - a)
 
 def iota(n int) |int|
     return |n, ...iota(n+1)|

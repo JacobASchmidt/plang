@@ -4,10 +4,10 @@ type Builder struct
     buf [byte]
 
 def Collect(b |byte|) string 
-    return Builder{}.AppendBytes(b)
+    return Builder{}.AppendBytes(b).String()
 
 def CollectRunes(r |rune|) string 
-    return Builder{}.AppendRunes(r)
+    return Builder{}.AppendRunes(r).String()
 
 def (b Builder) AppendByte(b byte) Builder 
     return b{.buf = (buf) => append(buf, b)}
@@ -23,6 +23,12 @@ def (b Builder) AppendRunes(runes |rune|) Builder
 
 def (b Builder) AppendString(s string) Builder 
     return b.Append(bytes(s))
+
+def (b Builder) Bytes() [byte]
+    return b.buf
+
+def (b &Builder) View() &[byte]
+    return b.buf
 
 def (b Builder) String() string 
     return string(b.buf)

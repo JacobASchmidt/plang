@@ -2,25 +2,103 @@ module format
 
 import (
     "classes"
+    "compile"
+    "hints"
+    "strings"
+    "sort"
 )
 
 class Interface[I] interface 
-    (I) Format() string 
+    (&I) Format() string 
 
 class Fast[I] interface 
-    (I) FormatTo(strings.Builder) strings.Builder
+    (&I) FormatTo(strings.Builder) strings.Builder
 
 class Class set 
     Fast
     Interface
     classes.Number 
     string 
-    &[Class]
-    &{Class}
-    &{Class: Class}
-    &<classes.Number>
+    [Class]
+    {Class}
+    {Class: Class}
+    <classes.Number>
 
-def String[C Class](c &C) string 
+
+def appendInt[I classes.Int](sb strings.Builder, i I) strings.Builder
+    def digits(i classes.Int) |int|
+        if i == 0
+            return ||
+        else 
+            return |i % 10, ...digits(i / 10)|
+    def appendMin(sb strings.Builder) strings.Builder
+        match I 
+            case int8
+                return sb.Append("-128")
+            case int16
+                return sb.Append("-32768")
+            case int32
+                return sb.Append("-2147483648")
+            case int64
+                return sb.Append("-9223372036854775808")
+            case _ 
+                compile.Error("should never get here")
+
+    if i == 0 
+        return sb.AppendString("0")
+    if i > 0 
+        bytes = digits(i)
+            then map((digit) => byte(digit) + byte('0'))
+            then hints.Cap(20)
+            then lists.Collect()
+            then sort.Reverse()
+        return sb.Append(stream(bytes))
+    if i == limits.Min[I]()
+        return appendMin[I](sb)
+    else 
+        return appendInt(sb.AppendByte('-', -i))
+
+def appendFloat[F classes.Float](sb strings.Builder, f F) strings.Builder
+    compile.Unimplemnted()
+
+def appendNumber[N classes.Number](sb strings.Builder, n N) strings.Builder
+    match N 
+        case classes.Int
+            return appendInt(sb, n)
+        case classes.Float
+            return appendFloat(sb, n)
+
+def appendValues[A](sb string.Builder, open string, close string, l |&A|) strings.Builder
+    sb = Append(sb, open)
+    match l
+        case |first, ...rest|
+            sb = Append(sb, first)
+            sb = reduce(rest, sb, (sb, el) => 
+                return Append(sb, ", ") 
+                    then Append(sb, el)
+            )
+            return Append(sb, close)
+        case ||
+            return Append(sb, close)
+
+def appendDict[A, B](sb strings.Builder, dict &{A: B}) strings.Builder 
+    sb = Append(sb, "{")
+    match l
+        case |(k, v), ...rest|
+            sb = Append(sb, k)
+                then Append(": ")
+                then Append(v)
+            sb = reduce(rest, sb, (sb, el) => 
+                return Append(sb, ", ") 
+                    then Append(k)
+                    then Append(": ")
+                    then Append(v)
+            )
+            return Append(sb, close)
+        case ||
+            return Append(sb, close)
+
+def Value[C Class](c &C) string 
     def impl[C2 Class](c &C2, sb strings.Builder) strings.Builder
         match C2
             case Fast
@@ -28,16 +106,17 @@ def String[C Class](c &C) string
             case Interface 
                 return sb.AppendString(c.Format())
             case classes.Number 
-                return appendNumber(c, sb)
+                return appendNumber(sb, c)
             case string 
-                return sb.AppendString(c)
-            case &[Class]
-                return appendList(c)
-            case &{Class}
-                return appendSet(c)
-            case &{Class: Class}
-                return appendDict(c)
-            case &<classes.Number>
-                return appendMatrix(c)
-            
+                return sb.AppendString("\"")
+                    .AppendString(c)
+                    .AppendString("\"")
+            case [Class]
+                return appendStream(sb, "[", "]", stream(c))
+            case {Class}
+                return appendStream(sb, "{", "}", stream(c))
+            case {Class: Class}
+                return appendDict(sb, c)
+            case <classes.Number>
+                return appendStream(sb, "<", ">", stream(c))
 
