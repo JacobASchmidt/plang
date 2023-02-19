@@ -17,7 +17,7 @@ def getFruit(s &data.Store, c http.Context) http.Result
             return c.Status(404).JSON(("message", "Fruit not found"))
         
 def addFruit(s data.Store, c http.Context) (data.Store, http.Result) 
-    match c.ParseBody[Fruit]()
+    match c.ParseBody[data.Fruit]()
         case ok(fruit)  
             return (
                 s.AddFruit(fruit), 
@@ -31,7 +31,7 @@ def addFruit(s data.Store, c http.Context) (data.Store, http.Result)
 
 def updateFruit(s data.Store, c http.Context) (data.Store, http.Result)
     name = c.Params("name")
-    match c.ParseBody[Fruit]()
+    match c.ParseBody[data.Fruit]()
         case ok(fruit)
             (s, found) = s.UpdateFruit(fruit)
             if found    
