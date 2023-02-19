@@ -55,4 +55,4 @@ def (s Store) DeleteFruit(name string) (Store, found bool)
             case none()
                 return (s, false)
     )
-# dummy for commit
+
