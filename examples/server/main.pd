@@ -1,61 +1,54 @@
 module main
 
 import (
+    "data" 
     "http"
 )
 
-type Fruit struct 
-    Name     string {.json = "name"}
-    Quantity int    {.json = "quanitity"}
+def getFruits(s &data.Store, c http.Context) http.Result    
+    return c.Send(s.FruitsJSON())
 
-fruits := {
-    "apple": 10,
-    "banana": 5
-}
-
-def getFruits(c http.Context) http.Result
-    return c.JSON(fruits)
-
-def getFruit(c http.Context) http.Result 
+def getFruit(s &data.Store, c http.Context) http.Result 
     name = c.Params("name")
-    match fruits[name]
+    match s.GetFruit(name)
         case some(val)
             return c.JSON(val)
         case none()
             return c.Status(404).JSON(("message", "Fruit not found"))
-
-def addFruit(c http.Context) http.Result 
+        
+def addFruit(s data.Store, c http.Context) (data.Store, http.Result) 
     match c.ParseBody[Fruit]()
-        case ok(fruit)
-            fruits := fruits{fruit.Name: fruit.Quanitity)
-            return c.Status(201).JSON(("message", "Fruit added succesfully"))
-        case err(err)
-            return c.Status(400).JSON(("messsage", "Invalid request body"))
+        case ok(fruit)  
+            return (
+                s.AddFruit(fruit), 
+                c.Status(201).JSON(("message", "Fruit added successfuly")
+            )
+        case err(e)
+            return (
+                s,
+                c.Status(400).JSON(("message", "Invalid Body Request")
+            )
 
-def updateFruit(c http.Context) http.Result
+def updateFruit(s data.Store, c http.Context) (data.Store, http.Result)
     name = c.Params("name")
     match c.ParseBody[Fruit]()
         case ok(fruit)
-            match fruits[fruit.Name]
-                case some(_)
-                    fruits := fruits{fruit.Name: fruit.Quanitity}
-                    return c.JSON(fiber.Map{"message": "Fruit quantity updated successfully"})
-                case none()
-                    return c.Status(404).JSON(("message", "Fruit not found"))
-        case err(err)
-            return c.Status(400).JSON(("message", "Invalid request body"))
+            (s, found) = s.UpdateFruit(fruit)
+            if found    
+                return (s, c.JSON(("message", "Fruit quantity update successfully")))
+            else 
+                return (s, c.Status(404).JSON(("message", "Fruit not found")))
 
-def deleteFruit(c http.Context) http.Result
+def deleteFruit(s data.Store, c http.Context) (data.Store, http.Result)
     name = c.Params("name")
-    match fruits[name]
-        case some(val)
-            fruits := delete(fruits, name)
-            return c.JSON(("message", "Fruit deleted successfully"))
-        case none()
-            return c.Status(404).JSON(("message": "Fruit not found"))
+    (s, found) = s.DeleteFruit(name)
+    if found 
+        return c.JSON(("message", "Fruit deleted successfully"))
+    else 
+        return c.Status(404).JSON(("message", "Fruit not found"))
 
 def main()
-    app = http.New()
+    app = http.New(Data.New())
         .Get("/fruits", getFruits)
         .Get("/fruits/:name", getFruit)
         .Post("/fruits", addFruit)
