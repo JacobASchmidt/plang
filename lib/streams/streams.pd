@@ -1,20 +1,23 @@
 module streams
 
-def AdjecentPairs[A](a |&A|) |(&A, &A)|
+def AdjacentPairs[A](a |&A|) |(&A, &A)|
     match a 
         case |first, second, ...rest|
-            return |(first, second), ...AdjecentPairs(|second, ...rest|)|
+            return |(first, second), ...AdjacentPairs(|second, ...rest|)|
         case _
             return ||
         
 def Repeat[A](a &A) |&A|
     return |a, ...Repeat(a)|
 
+def Func[A](f &() => A) |A|
+    return |f(), ...Func(f)|
+
 def IsPartitioned[A](a |A|, f &(A) => bool) bool 
     def impl(a |A|, f &(A) => bool) bool 
         match a 
             case |first, ...rest|
-                if f(a)
+                if f(first)
                     return impl(rest, f)
                 else 
                     return restFalse(rest, f)
