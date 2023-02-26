@@ -19,13 +19,13 @@ type Mux[State] struct
     routes [string]
     funcs  [Func[State]]
 
-type Server[State] struct 
+type Server[State synced] struct 
     con       net.TCPConn
     state     State 
     CallBacks mux[State]
 
 
-def New[State](s State) Server 
+def New[State synced](s State) Server 
     return Server{
         .state = state
     }
@@ -37,10 +37,14 @@ def (s Server) Listen(port string) Error
         case err(e)
             return e 
     
-    return control.Loop(saying, () => 
+    return control.Loop(s, () => 
         s = s{
             .con = (con) => 
-                # UH OH
-
-
+                match con.Accept()
+                    case ok(con, newCon)
+                        run fork(newCon, s.callbacks, s.state)
+                        return con 
+                    case err(err)
+                        panic(err)
+        }
     )

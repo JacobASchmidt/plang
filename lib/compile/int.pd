@@ -27,3 +27,7 @@ I1 = Succ[I0]{}
 I2 = Add(I1, I1)
 I3 = Add(I2, I1)
 I4 = Add(I2, I2)
+I5 = Add(I3, I2)
+I6 = Add(I4, I2)
+I7 = Add(I4, I3)
+I8 = Add(I4, I4)
