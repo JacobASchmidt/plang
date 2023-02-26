@@ -1,0 +1,15 @@
+module context 
+
+import (
+    "compile"
+)
+
+class Canceller[Self] interface 
+    (&Self) Deadline() maybe[time.Time]
+    (&Self) Done() <-chan()
+
+type Context[State compile.List] struct 
+    Deadline maybe[time.Time]
+    Done     <-chan()
+    State    State 
+

@@ -1,0 +1,21 @@
+module compile
+
+
+class List set 
+    Empty
+    More[Any, List]
+
+type Empty struct 
+    pass 
+
+def Nil() Empty 
+    return Empty{}
+
+type More[New, Rest List] struct 
+    First New 
+    Rest Rest 
+
+def Add[A, C List](c C, A) More[A, C]
+    return More[A, C]{.First = A, .Second = c}
+
+def Reduce(a )

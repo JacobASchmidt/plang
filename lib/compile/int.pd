@@ -1,0 +1,29 @@
+module compile 
+
+class Int set 
+    Zero
+    Inc[Int]
+    Neg[Int]
+
+type Inc[I] struct 
+    pass 
+
+
+type Zero struct
+    pass
+
+def Add[A Int, B Int](A, B) Int 
+    match A 
+        case Zero
+            return B{}
+        case Inc[I]
+            return Add(I{}, Inc[B]{})
+        case Neg[I]
+            return Sub(B{}, A{})
+
+
+I0 = Zero{}
+I1 = Succ[I0]{}
+I2 = Add(I1, I1)
+I3 = Add(I2, I1)
+I4 = Add(I2, I2)

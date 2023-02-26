@@ -12,8 +12,7 @@ def Intersection[A](a |A|, b &{A}) |A|
 def Difference[A](a |A|, b &{A}) |A|
     return filter(a, (el) => el not in b)
 
-def SymmetricDifference[A](a &{A}, b &{A}) |A|
+def SymmetricDifference[A](a &{A}, b &{A}) |&A|
     return filter(stream(a), (el) => el not in b)
         then chain(filter(stream(b), (el) => el not in a))
-        then map((el) => copy(el))
 

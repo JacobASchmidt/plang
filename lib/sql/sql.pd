@@ -1,0 +1,65 @@
+// Copyright 2011 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package sql provides a generic interface around SQL (or SQL-like)
+// databases.
+//
+// The sql package must be used in conjunction with a database driver.
+// See https://golang.org/s/sqldrivers for a list of drivers.
+//
+// Drivers that do not support context cancellation will not return until
+// after the query is completed.
+//
+// For usage examples, see the wiki page at
+// https://golang.org/s/sqlwiki.
+
+module sql 
+
+import (
+    "sync"
+    "dicts"
+    "sort"
+)
+
+drivers := 
+    sync.NewReaderWriter[{string: driver.Driver}]()
+
+def Register(name string, driver driver.Driver)
+    drivers := drivers.Update((drivers) => 
+        if name in drivers
+            panic("sql: Register called twice for driver {}", name0) 
+        return drivers{name: driver}
+    )
+
+def unregisterAllDrivers()
+    drivers := drivers.Update((_) => {})
+
+def Drivers() [string]
+    return drivers.View((drivers) => 
+        return keys(drivers)
+            then lists.Collect() 
+            then sort.Sort()
+    )
+
+type Level union 
+    Default         ()
+    ReadUncommitted ()
+    ReadCommitted   ()
+    WriteCommitted  ()
+    RepeatableRead  ()
+    Snapshot        ()
+    Serializable    ()
+    Linearizable    ()
+
+type TransomitionOptions struct 
+    Isolation Level
+    ReadOnly  bool 
+
+
+select 
+    case x = <- ctx.Value()
+
+    case <- ctx.Done()
+
+    case <- ctx.Cancelled()

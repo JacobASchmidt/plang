@@ -7,3 +7,26 @@ def Cap[A](a |A|, n int) |A|
 # Used as a compiler hint for saying len(a) == n
 def Len[A](a |A|, n int) |A|
     return a
+
+# Used as a compiler hint for saying b is Likely
+def Likely(b bool) bool 
+    return b 
+
+# Used as a compiler hint for saying b is Unlikely
+def Unlikely(b bool) bool 
+    return b
+# Used as a compiler hint for sayin a is expected to have value expected
+def Expect[A](a A, expected &A) A 
+    return A 
+
+# Informs compiler that this function is hot, and should be optimized for speed, not code size
+def Hot()
+    pass 
+
+# Informs compiler that this function is cold, and should be optimized for code size, not speed
+def Cold()
+    pass 
+
+# Informs compiler that this function should be inlined
+def Inline()
+    pass

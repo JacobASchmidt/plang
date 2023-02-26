@@ -11,7 +11,7 @@ type store struct
 type Store sync.ReaderWriter[store]
 
 def New() Store 
-    return Store{}
+    return sync.NewReaderWriter[store]()
 
 type Fruit struct 
     Name      string {.json = "name"}
@@ -55,4 +55,3 @@ def (s Store) DeleteFruit(name string) (Store, found bool)
             case none()
                 return (s, false)
     )
-
