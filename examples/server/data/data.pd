@@ -1,4 +1,4 @@
-moudle data 
+module data 
 
 import (
     "json"
