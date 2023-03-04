@@ -42,7 +42,7 @@ def (s Server) Listen(port string) Error
             .con = (con) => 
                 match con.Accept()
                     case ok(con, newCon)
-                        run fork(newCon, s.callbacks, s.state)
+                        run fork(newCon, s.callbacks, share(s.state))
                         return con 
                     case err(err)
                         panic(err)
