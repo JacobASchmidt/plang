@@ -1,0 +1,71 @@
+module sync 
+
+type Int 
+type UInt
+
+type UInt8
+type UInt16
+type UInt32
+type UInt64
+
+type Int8
+type Int16
+type Int32
+type Int64
+
+type State[A] chan A 
+
+type Signal struct 
+    chan ()
+    waiters UInt 
+
+def (s Signal) Wait(f &() => bool)
+    Waiters.Add(1)
+    control.Loop(() => 
+        <- s.chan 
+        if f()
+            s.waiters.Dec()
+            return control.Exit()
+        return control.Continue()
+    )
+    s.Waiters.Sub(1)
+
+def (s Signal) SignalAll()
+    control.While(
+        () => s.Waiters.Read() != 0,  
+        () => s.chan <- ()
+    )
+
+def (s Signal) SingalOne()
+    s.chan <- ()
+    # this seems inconsistent with wait, will really have to think about this
+
+
+
+def (s State[A]) Update(f (A) => A) State 
+    return s <- f(<- s)
+
+def (s State[A]) Read[B](f (&A) => B) B 
+    val = <- s 
+    ret = f(val)
+    s <- val 
+    return ret 
+
+type ConcurrentReads[A] struct 
+    state      unsafe.State[A]
+    numWriters Int
+    numReaders Int
+    canWrite   Signal 
+    canRead    Signal 
+
+
+def (cr ConcurrentReads) Read[B](f (&A) => B) B
+    cr.canRead.Wait(() => cr.numReaders.Writers() == 0)
+    cr.numReaders.Add(1)
+    ret = f(c.state.Read())
+    cr.numReader.Sub(1)
+    return ret
+
+def (cr ConcurrentReads) Update(f (A) => A) ConcurrentReads
+    cr.canWrite.Wait(() => cr.numWriters == 0)
+    

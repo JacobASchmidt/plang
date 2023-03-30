@@ -198,5 +198,5 @@ def ReplaceAll(s string, old string, new string) string
                 return builder.AppendString(s[last:]).String()
     return impl(s, old, new, findAll(s, old), 0, Builder{})
 
-def FindLast(s string, sub string) maybe[int]
-    
+
+def Diff(a string, b string)     

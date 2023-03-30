@@ -1,0 +1,8 @@
+module unsafe
+
+type State[A]
+
+
+def (s State[A]) Read() &A 
+
+def (s State[A]) Update(f (A) => A)
