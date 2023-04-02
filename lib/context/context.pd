@@ -13,3 +13,7 @@ type Context[State compile.List] struct
     Done     <-chan()
     State    State 
 
+
+ctx = ctx.Add(ctx, {.token = token})
+token = ctx.Get[{.token = JSW.Token}]()
+

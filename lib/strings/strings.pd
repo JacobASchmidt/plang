@@ -1,38 +1,5 @@
 module strings
 
-type Builder struct 
-    buf [byte]
-
-def Collect(b |byte|) string 
-    return Builder{}.AppendBytes(b).String()
-
-def CollectRunes(r |rune|) string 
-    return Builder{}.AppendRunes(r).String()
-
-def (b Builder) AppendByte(b byte) Builder 
-    return b{.buf = (buf) => append(buf, b)}
-
-def (b Builder) AppendRune(r rune) Builder 
-    return b{.buf = (buf) => utf8.AppendRune(r)}
-
-def (b Builder) AppendBytes(bytes |byte|) Builder 
-    return reduce(bytes, b, (b, c) => b.AppendByte(c))
-
-def (b Builder) AppendRunes(runes |rune|) Builder
-    return reduce(runes, b, (b, r) => b.AppendRune(r))
-
-def (b Builder) AppendString(s string) Builder 
-    return b.Append(bytes(s))
-
-def (b Builder) Bytes() [byte]
-    return b.buf
-
-def (b &Builder) View() &[byte]
-    return b.buf
-
-def (b Builder) String() string 
-    return string(b.buf)
-
 def Find(s string, sub string) maybe[int]
     def builtTable(sub string, table [int], i int, j int) [int]
         if i >= len(sub)

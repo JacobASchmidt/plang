@@ -1,0 +1,16 @@
+module builtins 
+
+type Int 
+type UInt
+
+type UInt8
+type UInt16
+type UInt32
+type UInt64
+
+type Int8
+type Int16
+type Int32
+type Int64
+
+type Bool 

@@ -1,0 +1,17 @@
+module sync
+
+type WaitGroup struct 
+    waiters Int 
+
+def (w WaitGroup) Add(i int)
+    w.waiters.Add(i)
+
+def (w WaitGroup) Done()
+    w.waiters.Sub(1)
+
+def (w WaitGroup) Wait()
+    control.While(
+        () => w.waiters.Load() != 0,
+        () => runtime.Yield()
+    )
+

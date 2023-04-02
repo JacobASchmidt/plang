@@ -1,17 +1,8 @@
 module sync 
 
-type Int 
-type UInt
-
-type UInt8
-type UInt16
-type UInt32
-type UInt64
-
-type Int8
-type Int16
-type Int32
-type Int64
+type Spin[A] struct 
+    state unsafe.State[A]
+    flag Bool 
 
 type State[A] chan A 
 
@@ -20,7 +11,7 @@ type Signal struct
     waiters UInt 
 
 def (s Signal) Wait(f &() => bool)
-    Waiters.Add(1)
+    s.waiters.Inc()
     control.Loop(() => 
         <- s.chan 
         if f()
@@ -28,7 +19,7 @@ def (s Signal) Wait(f &() => bool)
             return control.Exit()
         return control.Continue()
     )
-    s.Waiters.Sub(1)
+    s.waiters.Dec()
 
 def (s Signal) SignalAll()
     control.While(
@@ -51,21 +42,3 @@ def (s State[A]) Read[B](f (&A) => B) B
     s <- val 
     return ret 
 
-type ConcurrentReads[A] struct 
-    state      unsafe.State[A]
-    numWriters Int
-    numReaders Int
-    canWrite   Signal 
-    canRead    Signal 
-
-
-def (cr ConcurrentReads) Read[B](f (&A) => B) B
-    cr.canRead.Wait(() => cr.numReaders.Writers() == 0)
-    cr.numReaders.Add(1)
-    ret = f(c.state.Read())
-    cr.numReader.Sub(1)
-    return ret
-
-def (cr ConcurrentReads) Update(f (A) => A) ConcurrentReads
-    cr.canWrite.Wait(() => cr.numWriters == 0)
-    

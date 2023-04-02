@@ -1,0 +1,29 @@
+module sync 
+
+import (
+    "runtime"
+    "control"
+)
+
+type Once struct 
+    done Bool 
+    started Bool
+
+def waitFor(f &() => bool) 
+    control.While(
+        () => not f(),
+        () => runtime.Yield()
+    )
+
+def (o Once) Do(f () => ()) 
+    if o.done.Load()
+        return 
+    if o.started.Load()
+        waitFor(() => o.done.Load())
+        return 
+    if not o.started.Update(true)
+        f()
+        o.done.Update(true)
+    else 
+        waitFor(() => o.done.Load())
+
