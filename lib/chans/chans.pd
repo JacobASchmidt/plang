@@ -1,1 +1,46 @@
 module chans
+
+import (
+    "sync"
+    "time"
+)
+
+def FanIn[A](ins |chan A|, out chan A)
+    wg = sync.WaitGroup
+    forced.Map(ins, (in) =>
+        wg.Add(1) 
+        run 
+            forced.Map(stream(in), (el) => out <- el)
+            wg.Done()
+    )
+    run 
+        wg.Wait()
+        close(out)
+    
+
+def FanOut[A](in |A|, outs &[chan A], randomizer &(int) => int)
+    run 
+        forced.Map(ins, (el) => 
+            i = randomizer(len(outs))
+            outs[i] <- el
+        )
+        forces.Map(stream(outs), (out) => close(out))
+
+def LoadBalance[A](ins |A|, outs [A], randomizer &(int) => int)
+    FanOut(FanIn(ins), outs, randomizer)
+
+
+def TryReceive[A](c chan A, duration time.Duration) maybe[A]
+    select 
+        case ret = <- c
+            return some(ret)
+        case <- time.After(duration)
+            return none()
+
+def TrySend[A](c chan A, a A, duration time.Duration) maybe[A]
+    select 
+        case c <- a 
+            return none()
+        case <- time.After(duration)
+            return some(a)
+    
