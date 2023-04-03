@@ -9,7 +9,7 @@ import (
 
 type State[A] struct
     state      unsafe.State[A]
-    waiters    Spin[queues.Queue[runtime.Thread]]
+    waiters    Atomic[queues.Queue[runtime.Thread]]
     len        Int
 
 def (s State[A]) wakeNext()
