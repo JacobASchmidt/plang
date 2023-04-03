@@ -1,7 +1,11 @@
 module sync
 
+import (
+    "runtime"
+)
+
 type WaitGroup struct 
-    waiters Int 
+    waiters Int
 
 def (w WaitGroup) Add(i int)
     w.waiters.Add(i)

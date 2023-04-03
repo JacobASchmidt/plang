@@ -31,7 +31,7 @@ def (s State[A]) Read[B](f (&A) => B) B
         return ret
     else 
         s.waiters.Update((q) => q.Add(runtime.ThisThread()))
-        runtime.Wait()
+        runtime.Sleep()
         ret = f(s.state.Read())
         if s.len.Dec() != 1 
             s.wakeNext()
@@ -45,7 +45,7 @@ def (s State[A]) Update(f (A) => A)
         return
     else 
         s.waiters.Update((q) => q.Add(runtime.ThisThread()))
-        runtime.Wait()
+        runtime.Sleep()
         s.state.Update(f)
         if s.len.Dec() != 1 
             s.wakeNext()

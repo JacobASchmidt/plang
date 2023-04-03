@@ -20,3 +20,12 @@ def Map[A](a [A], f &(A) => A) [A]
     return range(0, len(a))
         then reduce(a, (a, i) => a[i = (el) => f(el)])
 
+#TODO might want to change start, dont allow len(a) == 0
+def Cycle[A](a &[A], start int) |&A|
+    if start > len(a)
+        panic("invalid start, len(a)={}, start={}", len(a), start)
+    if start == len(a)
+        return Cycle(a, 0)
+    return |a[start], Cycle(a, start + 1)|
+
+    

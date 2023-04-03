@@ -3,15 +3,19 @@ module sync
 import (
     "unsafe"
     "runtime"
+    "queues"
 )
 
 type ConcurrentReads[A] struct 
     state          unsafe.State[A]
-    waitingReaders Spin[{runtime.Thread}]
-    waitingWriters Spin[{runtime.Thread}]
+    waitingReaders Atomic[queues.Queue[runtime.Thread]]
+    waitingWriters Atomic[queues.Queue[runtime.Thread]]
     readers        Int
 
 def (cr ConcurrentReads[A]) Read[B](f (&A) => B) B
-    if cr.Readers.Inc() > 0
+    if cr.readers.Inc() > 0
+        cr.waitingReaders.Add(runtime.ThisThread())
+        runtime.Sleep()
+    else 
         
 
