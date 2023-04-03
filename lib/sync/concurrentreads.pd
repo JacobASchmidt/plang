@@ -1,0 +1,17 @@
+module sync 
+
+import (
+    "unsafe"
+    "runtime"
+)
+
+type ConcurrentReads[A] struct 
+    state          unsafe.State[A]
+    waitingReaders Spin[{runtime.Thread}]
+    waitingWriters Spin[{runtime.Thread}]
+    readers        Int
+
+def (cr ConcurrentReads[A]) Read[B](f (&A) => B) B
+    if cr.Readers.Inc() > 0
+        
+

@@ -1,44 +1,52 @@
 module sync 
 
-type Spin[A] struct 
-    state unsafe.State[A]
-    flag Bool 
+import (
+    "unsafe"
+    "runtime"
+    "control"
+    "queues"
+)
 
-type State[A] chan A 
+type State[A] struct
+    state      unsafe.State[A]
+    waiters    Spin[queues.Queue[runtime.Thread]]
+    len        Int
 
-type Signal struct 
-    chan ()
-    waiters UInt 
-
-def (s Signal) Wait(f &() => bool)
-    s.waiters.Inc()
-    control.Loop(() => 
-        <- s.chan 
-        if f()
-            s.waiters.Dec()
-            return control.Exit()
-        return control.Continue()
-    )
-    s.waiters.Dec()
-
-def (s Signal) SignalAll()
+def (s State[A]) wakeNext()
     control.While(
-        () => s.Waiters.Read() != 0,  
-        () => s.chan <- ()
+        () => len(s.waiters.Read()) == 0,
+        () => () #spin
     )
-
-def (s Signal) SingalOne()
-    s.chan <- ()
-    # this seems inconsistent with wait, will really have to think about this
-
-
-
-def (s State[A]) Update(f (A) => A) State 
-    return s <- f(<- s)
+    s.waiters.Update((q) =>
+        (q, thread) = q.Pop()
+        return q
+    )
+    runtime.Wake(thread)
 
 def (s State[A]) Read[B](f (&A) => B) B 
-    val = <- s 
-    ret = f(val)
-    s <- val 
-    return ret 
+    if s.len.Inc() == 0
+        ret = f(s.state.Read())
+        if s.len.Dec() != 1
+            s.wakeNext()
+        return ret
+    else 
+        s.waiters.Update((q) => q.Add(runtime.ThisThread()))
+        runtime.Wait()
+        ret = f(s.state.Read())
+        if s.len.Dec() != 1 
+            s.wakeNext()
+        return ret
 
+def (s State[A]) Update(f (A) => A)
+    if s.len.Inc() == 0
+        s.state.Update(f)
+        if s.len.Dec() != 1
+            s.wakeNext()
+        return
+    else 
+        s.waiters.Update((q) => q.Add(runtime.ThisThread()))
+        runtime.Wait()
+        s.state.Update(f)
+        if s.len.Dec() != 1 
+            s.wakeNext()
+        return

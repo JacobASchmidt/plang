@@ -3,10 +3,11 @@ module chans
 import (
     "sync"
     "time"
+    "forced"
 )
 
 def FanIn[A](ins |chan A|, out chan A)
-    wg = sync.WaitGroup
+    wg = sync.WaitGroup{}
     forced.Map(ins, (in) =>
         wg.Add(1) 
         run 
@@ -26,9 +27,8 @@ def FanOut[A](in |A|, outs &[chan A], randomizer &(int) => int)
         )
         forces.Map(stream(outs), (out) => close(out))
 
-def LoadBalance[A](ins |A|, outs [A], randomizer &(int) => int)
-    FanOut(FanIn(ins), outs, randomizer)
-
+def LoadBalance[A](ins |A|, outs &[chan A], randomizer &(int) => int)
+    FanOut(FanIn(ins, chan A()), outs, randomizer)
 
 def TryReceive[A](c chan A, duration time.Duration) maybe[A]
     select 

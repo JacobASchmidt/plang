@@ -3,27 +3,24 @@ module sync
 import (
     "runtime"
     "control"
+    "queues"
 )
 
-type Once struct 
+#uses spinlock implementation
+type Once struct
+    started Bool 
     done Bool 
-    started Bool
-
-def waitFor(f &() => bool) 
-    control.While(
-        () => not f(),
-        () => runtime.Yield()
-    )
 
 def (o Once) Do(f () => ()) 
     if o.done.Load()
-        return 
-    if o.started.Load()
-        waitFor(() => o.done.Load())
-        return 
-    if not o.started.Update(true)
+        return
+    if not o.started.Set(true)
         f()
-        o.done.Update(true)
-    else 
-        waitFor(() => o.done.Load())
+        o.done.Set(true)
+    else
+        control.While(
+            () => not o.done.Load(),
+            () => #spin
+        ) 
+
 
