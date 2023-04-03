@@ -1,0 +1,27 @@
+module sync
+
+import (
+    "control"
+)
+
+#just a spinlock, we expect atomic updates to be quick
+type Atomic[A] struct 
+    state unsafe.State[A]
+    flag Bool 
+
+def (s Atomic[A]) Update(f (A) => A) 
+    control.While(
+        () => state.flag.Set(true),
+        () => () #spin
+    )
+    s.state.Update(f)
+    state.flag.Set(false)
+
+def (s Atomic[A]) Read[B](f (&A) => B) B 
+    control.While(
+        () => state.flag.Set(true),
+        () => ()
+    )
+    ret = f(s.state.Read())
+    s.state.Update(false)
+    return ret 
