@@ -27,5 +27,3 @@ def Cycle[A](a &[A], start int) |&A|
     if start == len(a)
         return Cycle(a, 0)
     return |a[start], Cycle(a, start + 1)|
-
-    
