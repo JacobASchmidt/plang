@@ -33,3 +33,14 @@ def IsPartitioned[A](a |A|, f &(A) => bool) bool
             case ||
                 return true 
     return impl(a, f)
+
+def Cycle[A](s |&A|) |&A|
+    def doCycle(list [&A], i int) |&A|
+        if i == len(list)
+            
+    def firstPass(s |&A|, list [&A]) |&A|
+        match s     
+            case |first, ...rest|
+                return |first, firstPass(rest, [...list, first])|
+            case ||
+                return doCycle(list, 0)
