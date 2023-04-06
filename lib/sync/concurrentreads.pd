@@ -21,8 +21,10 @@ type crstate union
 
 type ConcurrentReads[A] struct 
     state          unsafe.State[A]
-    waiting        Atomic[runtime.WakeList]
-    numActing      Int
+    waitingReaders Atomic[runtime.WakeList]
+    waitingWriters Atomic[runtime.WakeList]
+    numWriters     Int 
+    numReaders     Int
     crstate        Atomic[crstate]
 
 def (cr ConcurrentReads) wakeWriters()
@@ -30,26 +32,26 @@ def (cr ConcurrentReads) wakeWriters()
 
 def (cr ConcurrentReads[A]) Read[B](f (&A) => B) B
     state = cr.crstate.Update((state) => 
+        cr.numReaing.Inc()
         match state 
             case crstate.niether()
-                cr.numActing.Inc()
                 return crstate.reading()
             case crstate.reading()
-                cr.numActing.Inc()
                 return crstate.reading()
             case crstate.writing()
                 cr.waitingReaders.Add(runtime.ThisThread())
                 return cr.state.writing()
     )
+    
     if state is crstate.writing()
         runtime.Sleep()
     ret = f(cr.state)
-    if cr.numActing.Dec() == 1
+    if cr.numReaders.Dec() == 1
         cr.crstate.Update((state) => 
             #someone could have updated in meantime
-            if cr.numActing.Load() != 0
+            if cr.numReaders.Load() != 0
                 return crstate.reading()
-            if cr.waiting.Read((writers) => writers.Len()) != 0
+            if cr.numWriters.Load() != 0
                 cr.waiting.Update((writers) => writers.WakeOne())
                 return crstate.writing()
             else 
@@ -57,34 +59,40 @@ def (cr ConcurrentReads[A]) Read[B](f (&A) => B) B
         )
     return ret
 
-def (cr ConcurrentReads[A]) Write(f (A) => A) 
-    (state, isFirst) = cr.crstate.UpdateWith((state) => 
+
+def (cr ConcurrentReads[A]) Update[B](f (A) => A) 
+    shouldSleep = unsafe.NewState(false)
+    cr.crstate.Update((state) => 
+        cr.numWriters.Inc()
         match state 
             case crstate.niether()
-                cr.numActing.Inc()
-                return (crstate.writing()
+                shouldSleep.Set(false)
+                return (crstate.writing(), false)
             case crstate.writing()
-                cur = cr.numActing.Inc()
+                shouldSleep.Set(true)
+                cr.waitingWriters.Add(runtime.ThisThread())
                 return crstate.writing()
             case crstate.reading()
-                cr.waitingReaders.Add(runtime.ThisThread())
-                return cr.state.reading()
+                shouldSleep.Set(true)
+                cr.waitingWriters.Add(runtime.ThisThread())
+                return (cr.state.reading(), true)
     )
-    if state is crstate.reading()
+
+    if shouldSleep.Read()
         runtime.Sleep()
-        if 
+    
     cr.state.Update(f)
-    if cr.numActing.Dec() == 1
+    if cr.numWriters.Dec() == 1
         cr.crstate.Update((state) => 
             #someone could have updated in meantime
-            if cr.numActing.Load() != 0
-                return crstate.reading()
-            if cr.waiting.Read((writers) => writers.Len()) != 0
-                cr.waiting.Update((writers) => writers.WakeAll())
+            if cr.numWriters.Load() != 0
+                cr.waitingWriters.WakeOne()
+                return crstate.writing()
+            if cr.numReaders.Load() != 0
+                cr.waitingReaders.Update((readers) => readers.WakeAll())
                 return crstate.writing()
             else 
                 return crstate.niether()
         )
     else 
-        cr.
-    return ret
+        cr.waitingWriters.WakeOne()
